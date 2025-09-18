@@ -1,0 +1,48 @@
+# -------------------------
+# Node.js dependencies
+# -------------------------
+node_modules/
+Buzzup-backend/node_modules/
+Buzzup-frontend/node_modules/
+
+# -------------------------
+# Build outputs
+# -------------------------
+Buzzup-frontend/dist/
+Buzzup-frontend/build/
+Buzzup-backend/dist/
+
+# -------------------------
+# Logs
+# -------------------------
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# -------------------------
+# Environment files
+# -------------------------
+.env
+Buzzup-backend/.env
+Buzzup-frontend/.env
+
+# -------------------------
+# System & IDE files
+# -------------------------
+.DS_Store
+.vscode/
+*.swp
+*.swo
+Thumbs.db
+
+# -------------------------
+# Optional caches
+# -------------------------
+.cache/
+.parcel-cache/
+.next/
+out/
+coverage/

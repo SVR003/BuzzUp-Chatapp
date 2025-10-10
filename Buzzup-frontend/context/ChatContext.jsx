@@ -12,7 +12,7 @@ export const ChatProvider = ({ children }) => {
     const [selectedUser, setSelectedUser] = useState(null)
     const [unseenMessages, setUnseenMessages] = useState({})
 
-    const {socket, axios} = useContext(AuthContext)
+    const {socket, axios, authUser} = useContext(AuthContext)
 
     // Function to get all users for sidebar
 
@@ -32,11 +32,19 @@ export const ChatProvider = ({ children }) => {
 
     const getMessages = async (userId) => {
         try {
+
+            // For Ai User
+            if(selectedUser?.email === "ai@buzzup.com"){
+                // initial no message history for aiUser
+                setMessages([])
+                return;
+            }
+
             const { data } = await axios.get(`/api/message/${userId}`);
             if(data.success){
                 setMessages(data.messages)
-
             }
+
         } catch (error) {
             toast.error(error.message)
         }
@@ -46,7 +54,38 @@ export const ChatProvider = ({ children }) => {
 
     const sendMessage = async (messageData) => {
         try {
-            const { data } = await axios.post(`/api/message/send/${selectedUser._id}`, messageData)
+            // ai - user message
+            if(selectedUser?.email === "ai@buzzup.com"){
+                
+                // user message
+                const userMessage = {
+                    senderId: authUser._id,
+                    text: messageData.text,
+                    createdAt: new Date().toISOString(),
+                }
+                setMessages((prev) => [...prev, userMessage])
+
+                const { data } = await axios.post('/api/ai/chat', { text: messageData.text});
+
+
+                // Ai reply
+                if(data.success){
+                    const aiReply = {
+                        senderId: "ai",
+                        text: data.reply,
+                        createdAt: new Date().toISOString(),
+                    }
+
+                    setMessages((prev) => [...prev, aiReply])
+                }else{
+                    toast.error(data.message || "Ai Error")
+                }
+
+                return
+            }
+
+        // user to user message
+        const { data } = await axios.post(`/api/message/send/${selectedUser._id}`, messageData)
         if(data.success){
             setMessages((prevMessage) => [...prevMessage, data.newMessage])
         }else{
@@ -68,7 +107,7 @@ export const ChatProvider = ({ children }) => {
             if(selectedUser && newMessage.senderId === selectedUser._id){
                 newMessage.seen = true;
                 setMessages((prevMessages) => [...prevMessages, newMessage]);
-                axios.put(`/api/message/mark/${newMessage._id}`);l
+                axios.put(`/api/message/mark/${newMessage._id}`);
             }else{
                 setUnseenMessages((prevUnseenMessages) => ({
                     ...prevUnseenMessages, [newMessage.senderId] :

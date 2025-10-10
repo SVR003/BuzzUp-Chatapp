@@ -49,8 +49,11 @@ const LeftSide = () => {
             <div className='flex flex-col leading-5'>
               <p>{user.fullName}</p>
               {
+                user.isBot? (
+                  <span className="text-green-500 text-xs">Online</span>
+                ) :
                 onlineUsers.includes(user._id)?
-                <span className='text-green-500 text-xs'>Online</span>: <span className='text-gray-500 text-xs'>Offline</span>
+                (<span className='text-green-500 text-xs'>Online</span>): (<span className='text-gray-500 text-xs'>Offline</span>)
               }
             </div>
             {unseenMessages[user._id]>0 && <p className='absolute top-4 right-4 h-5 w-5 text-xs flex justify-center items-center rounded-full bg-violet-500/50'>{unseenMessages[user._id]}</p>}
